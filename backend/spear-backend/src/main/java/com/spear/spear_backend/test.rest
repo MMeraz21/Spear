@@ -15,3 +15,8 @@ Content-Type: application/json
 GET http://localhost:8080/api/poems
 
 ###
+# Search by Title
+GET http://localhost:8080/api/poems/search?title=th
+###
+# Search by title v2
+GET http://localhost:8080/api/poems/search?title=the&page=0&size=10
