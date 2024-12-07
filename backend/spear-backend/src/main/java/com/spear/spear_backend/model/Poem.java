@@ -24,6 +24,7 @@ public class Poem {
     private int shares;
     private int views;
     private int commentsCount;
+    private String language;
 
     private List<String> relatedPoemIds;
 
