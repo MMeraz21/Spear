@@ -1,0 +1,17 @@
+# Create a Poem
+POST http://localhost:8080/api/poems
+Content-Type: application/json
+
+{
+    "title": "Ode to the Night",
+    "content": "In the still of the night, the stars align, whispering secrets of time.",
+    "authorId": "12345",
+    "tags": ["nature", "night", "stars"],
+    "language": "English"
+}
+
+###
+# Get All Poems
+GET http://localhost:8080/api/poems
+
+###
