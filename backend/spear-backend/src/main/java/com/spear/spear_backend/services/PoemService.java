@@ -16,6 +16,15 @@ public class PoemService {
     @Autowired
     private PoemRepository poemRepository;
 
+    public Poem getPoemById(String id) {
+        return poemRepository.findById(id).orElse(null);  
+    }
+
+    public Page<Poem> getPoemsByAuthorId(String authorId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size); // Creating pageable object for pagination
+        return poemRepository.findByAuthorId(authorId, pageRequest);  // Passing the Pageable parameter
+    }
+
     public List<Poem> getAllPoems() {
         // Fetch poems from MongoDB
         return poemRepository.findAll();

@@ -17,8 +17,29 @@ public class PoemController {
     @Autowired
     private PoemService poemService;
 
-        // Search poems based on query parameters
-    @GetMapping("/search")
+    @GetMapping("/{id}")   //just gets singular poem by id
+    public ResponseEntity<Poem> getPoemById(@PathVariable String id) {
+        Poem poem = poemService.getPoemById(id);
+        if (poem == null) {
+            return ResponseEntity.notFound().build();  // Return 404 if the poem is not found
+        }
+        return ResponseEntity.ok(poem);
+    }
+
+    @GetMapping("/author/{authorId}")
+    public ResponseEntity<Page<Poem>> getPoemsByAuthorId(
+            @PathVariable String authorId,
+            @RequestParam(defaultValue = "0") int page,  // Default to page 0
+            @RequestParam(defaultValue = "10") int size   // Default to size 10
+    ) {
+        Page<Poem> poems = poemService.getPoemsByAuthorId(authorId, page, size);
+        if (poems.isEmpty()) {
+            return ResponseEntity.notFound().build();  // Return 404 if no poems found
+        }
+        return ResponseEntity.ok(poems);  // Return the page of poems
+    }
+
+    @GetMapping("/search")  //search based on query params
     public Page<Poem> searchPoems(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String authorId,
