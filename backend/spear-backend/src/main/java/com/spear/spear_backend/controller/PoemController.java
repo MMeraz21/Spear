@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class PoemController {
 
     @Autowired
-    private PoemService poemService;
+    private PoemService poemService;  //test
 
     @GetMapping("/{id}")   //just gets singular poem by id
     public ResponseEntity<Poem> getPoemById(@PathVariable String id) {
