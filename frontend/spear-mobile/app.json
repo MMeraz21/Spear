@@ -2,6 +2,7 @@
   "expo": {
     "name": "spear-mobile",
     "slug": "spear-mobile",
+    "scheme": "com.googleusercontent.apps.626922748349-0s14cl1sdp1qdh6oeriotd97pa52ra3u",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mmeraz2.Spear"
     },
     "android": {
       "adaptiveIcon": {
