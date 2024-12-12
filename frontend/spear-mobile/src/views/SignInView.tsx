@@ -59,7 +59,6 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Spear</Text>
-        <CustomGoogleButton onPress={() => promptAsync()}/>
       {userInfo ? (
         <>
           <Text style={styles.welcomeText}>Welcome, {userInfo.name}</Text>
@@ -68,16 +67,7 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
           </TouchableOpacity>
         </>
       ) : (
-        
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={() => promptAsync()}
-          disabled={!request}
-        >
-          <Image source={{ uri: GOOGLE_LOGO_URL }} style={styles.googleLogo} />
-          <Text style={styles.googleButtonText}>Sign in with Google</Text>
-        </TouchableOpacity>
-        
+        <CustomGoogleButton onPress={() => promptAsync()}/>
       )}
     </View>
   );
@@ -97,25 +87,6 @@ const styles = StyleSheet.create({
     color: 'blue',
     textAlign: 'center',
     marginBottom: 40,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4285F4', // Google's blue color
-    borderRadius: 4,
-    width: 240,
-    height: 50,
-    justifyContent: 'center',
-  },
-  googleLogo: {
-    width: 18,
-    height: 18,
-    marginRight: 10,
-  },
-  googleButtonText: {
-    fontSize: 16,
-    color: '#FFFFFF', // White text for contrast
-    fontWeight: 'bold',
   },
   welcomeText: {
     fontSize: 18,
