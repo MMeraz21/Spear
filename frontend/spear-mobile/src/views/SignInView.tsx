@@ -60,6 +60,9 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Spear</Text>
+      <View style = {styles.imageContainer}>
+      <Image source={require('../../assets/SpearLogo.png')} style = {styles.image}/>
+      </View>
       {userInfo ? (
         <>
           <Text style={styles.welcomeText}>Welcome, {userInfo.name}</Text>
@@ -104,6 +107,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     fontWeight: 'bold',
+  },
+  image: {
+    height: 80,
+    width: 80,
+    resizeMode: 'cover',
+  },
+  imageContainer: {
+    backgroundColor: 'white',  // White background behind the image
+    borderRadius: 40,          // Half of the height/width to make it circular
+    padding: 10,               // Optional: To add some spacing around the image
+    overflow: 'hidden',        // Ensures the image fits within the circle
   },
 });
 
