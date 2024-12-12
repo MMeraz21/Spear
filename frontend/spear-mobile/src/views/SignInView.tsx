@@ -4,6 +4,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomGoogleButton from '../components/CustomGoogleButton';
+import { Colors } from '../constants/colors';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -78,15 +79,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.secondary,
     padding: 20,
   },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: 'blue',
+    color: Colors.primary3,
     textAlign: 'center',
     marginBottom: 40,
+    fontFamily: 'NimbusSansL-Bold'
   },
   welcomeText: {
     fontSize: 18,

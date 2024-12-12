@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, Button, ActivityIndicator } from 'react-native';
 import SignInView from './src/views/SignInView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadFonts } from './src/theme/fonts';
+
 
 // Define a type for userInfo
 type UserInfo = {
@@ -13,10 +15,23 @@ type UserInfo = {
 
 const App: React.FC = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null); // Explicitly define the type
+  const[fontsLoaded, setFontsLoaded] = useState(false);
 
   const handleUserInfoReceived = (user: UserInfo) => {
     setUserInfo(user);
   };
+
+  useEffect(() => {
+    const loadAppFonts = async () => {
+      await loadFonts();
+      setFontsLoaded(true);
+    };
+    loadAppFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return <ActivityIndicator />;
+  }
 
   return (
     <View style={styles.container}>
@@ -25,7 +40,7 @@ const App: React.FC = () => {
           <Text style={styles.welcomeText}>Welcome, {userInfo.name}!</Text>
           <Text>Your email: {userInfo.email}</Text>
           <Button
-            title="remove local store"
+            title="remove local storage"
             onPress={async () => await AsyncStorage.removeItem("@user")}
           />
         </View>
