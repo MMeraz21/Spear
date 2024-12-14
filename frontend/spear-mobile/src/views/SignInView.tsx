@@ -3,6 +3,11 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-na
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Svg, { Path } from 'react-native-svg';
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+  } from 'react-native-responsive-screen';  
 import CustomGoogleButton from '../components/CustomGoogleButton';
 import { Colors } from '../constants/colors';
 
@@ -59,66 +64,67 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Spear</Text>
-      <View style = {styles.imageContainer}>
-      <Image source={require('../../assets/SpearLogo.png')} style = {styles.image}/>
+      {/* Top Section */}
+      <View style={styles.container1}>
+        <Text style={styles.title}>Spear</Text>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('../../assets/SpearLogo.png')}
+            style={styles.image}
+          />
+        </View>
       </View>
-      {userInfo ? (
-        <>
-          <Text style={styles.welcomeText}>Welcome, {userInfo.name}</Text>
-          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-            <Text style={styles.signOutButtonText}>Sign Out</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <CustomGoogleButton onPress={() => promptAsync()}/>
-      )}
+
+      {/* Bottom Section */}
+      <View style={styles.buttonContainer}>
+        <CustomGoogleButton onPress={() => promptAsync()} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.secondary,
-    padding: 20,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: Colors.primary3,
-    textAlign: 'center',
-    marginBottom: 40,
-    fontFamily: 'NimbusSansL-Bold'
-  },
-  welcomeText: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  signOutButton: {
-    backgroundColor: '#FF5252', // Red color for sign-out
-    borderRadius: 4,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  signOutButtonText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
-  image: {
-    height: 80,
-    width: 80,
-    resizeMode: 'cover',
-  },
-  imageContainer: {
-    backgroundColor: 'white',  // White background behind the image
-    borderRadius: 40,          // Half of the height/width to make it circular
-    padding: 10,               // Optional: To add some spacing around the image
-    overflow: 'hidden',        // Ensures the image fits within the circle
-  },
+    container: {
+        flex: 1, 
+        backgroundColor: Colors.primary,
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+      },
+      container1: {
+        backgroundColor: Colors.secondary,
+        width: '100%', 
+        height: hp('45%'), 
+        borderBottomLeftRadius: 100, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        position: 'absolute', 
+        top: 0, 
+      },
+      title: {
+        fontSize: 36,
+        fontWeight: 'bold',
+        color: Colors.primary3,
+        textAlign: 'center',
+        marginBottom: 10, 
+        fontFamily: 'NimbusSansL-Bold',
+      },
+      image: {
+        height: 80,
+        width: 80,
+        resizeMode: 'contain', 
+      },
+      imageContainer: {
+        backgroundColor: 'white',
+        borderRadius: 40, 
+        padding: 10, 
+        overflow: 'hidden', 
+      },
+      buttonContainer: {
+        flex: 1, 
+        justifyContent: 'flex-end', 
+        alignItems: 'center', 
+        marginBottom: 90, 
+      },
 });
 
 export default SignInView;
