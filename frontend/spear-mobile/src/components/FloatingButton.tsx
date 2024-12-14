@@ -2,17 +2,31 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+
+
+type BottomTabParamList = {
+    Home: undefined;      
+    Profile: undefined;   
+    Settings: undefined;  
+    Create: undefined; 
+  };
+
+type NavigationProp = BottomTabNavigationProp<BottomTabParamList>;
 
 interface FloatingButtonProps {
-    onPress: () => void; // Explicitly require an onPress function
+    navigateTo: keyof BottomTabParamList; 
   }
   
-  const FloatingButton: React.FC<FloatingButtonProps> = ({ onPress }) => {
+  const FloatingButton: React.FC<FloatingButtonProps> = ({ navigateTo }) => {
+    const navigation = useNavigation<NavigationProp>();
+
     return (
       <TouchableOpacity
         style={styles.floatingButton}
-        onPress={onPress}
-        activeOpacity={0.7}
+        onPress={() => navigation.navigate(navigateTo)} 
+        activeOpacity={0.7}     
       >
       <Ionicons name="add" size={40} color="#FFFFFF" /> 
       </TouchableOpacity>

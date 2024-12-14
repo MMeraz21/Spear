@@ -22,10 +22,10 @@ type UserInfo = {
 };
 
 type BottomTabParamList = {
-  Home: undefined;      // No parameters expected
-  Profile: undefined;   // No parameters expected
-  Settings: undefined;  // No parameters expected
-  Create: undefined; // Add this line
+  Home: undefined;      
+  Profile: undefined;   
+  Settings: undefined;  
+  Create: undefined; 
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -54,14 +54,6 @@ const App: React.FC = () => {
   return (
     <View style={styles.container}>
       {userInfo ? (
-        // <View style={styles.welcomeContainer}>
-        //   <Text style={styles.welcomeText}>Welcome, {userInfo.name}!</Text>
-        //   <Text>Your email: {userInfo.email}</Text>
-        //   <Button
-        //     title="remove local storage"
-        //     onPress={async () => await AsyncStorage.removeItem("@user")}
-        //   />
-        // </View>
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -91,10 +83,10 @@ const App: React.FC = () => {
             <Tab.Screen name="Home" component={HomeView} />
             <Tab.Screen
               name="Create"
-              component={HomeView} // Replace with your "Create" screen
+              component={CreateScreen} // Replace with your "Create" screen
               options={{
                 tabBarButton: (props) => (
-                  <FloatingButton onPress={() => console.log("Create button pressed")} />
+                  <FloatingButton navigateTo="Create" /> 
                 ),
               }}
             />
