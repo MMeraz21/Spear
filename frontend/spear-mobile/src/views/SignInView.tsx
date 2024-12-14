@@ -99,14 +99,17 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         position: 'absolute', 
         top: 0, 
+        paddingHorizontal: 20, // Add padding for better left alignment
+
       },
       title: {
         fontSize: 36,
         fontWeight: 'bold',
         color: Colors.primary3,
-        textAlign: 'center',
-        marginBottom: 10, 
+        textAlign: 'left',
+        marginBottom: 40, 
         fontFamily: 'NimbusSansL-Bold',
+        alignSelf: 'flex-start', // Ensures title aligns left within the parent
       },
       image: {
         height: 80,
@@ -118,12 +121,13 @@ const styles = StyleSheet.create({
         borderRadius: 40, 
         padding: 10, 
         overflow: 'hidden', 
+        alignSelf: 'center',
       },
       buttonContainer: {
         flex: 1, 
         justifyContent: 'flex-end', 
         alignItems: 'center', 
-        marginBottom: 90, 
+        marginBottom: 132, 
       },
 });
 
