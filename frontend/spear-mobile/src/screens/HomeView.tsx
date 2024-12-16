@@ -10,6 +10,8 @@ import { Colors } from "../constants/colors";
 import { Poem, fetchPoems } from "../api/poems"
 import PoemView from "../components/PoemView";
 
+const { height } = Dimensions.get("window");
+
 const HomeView: React.FC = () => {
     const [poems, setPoems] = useState<Poem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -32,7 +34,7 @@ const HomeView: React.FC = () => {
       }, []);
 
     return (
-    <View style={styles.container}>
+    <View >
         {/* <Text style={styles.text}>Welcome to the Home Screen!</Text> */}
         <FlatList
             data={poems}
@@ -41,8 +43,13 @@ const HomeView: React.FC = () => {
             )}
             keyExtractor={(item) => item.id.toString()}
             pagingEnabled
-            showsVerticalScrollIndicator={true}
-            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            style = {styles.container}
+            snapToInterval={height}
+            decelerationRate="fast"
+            // contentContainerStyle={{ flexGrow: 1 }} // Ensures full height is used
+            // snapToAlignment="start" // Aligns each item at the start
+            // decelerationRate="fast" // Fast swiping experience
         />
     </View>
     );
@@ -50,32 +57,16 @@ const HomeView: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    //justifyContent: "center",
-    //alignItems: "center",
-    backgroundColor: Colors.secondary2
+    // flex: 1,
+    // justifyContent: "center",
+    // alignItems: "center",
+    backgroundColor: Colors.primary
   },
   text: {
     fontSize: 20,
     fontWeight: "bold",
   },
-  poemContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  poemTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  poemAuthor: {
-    fontStyle: "italic",
-    color: "#555",
-  },
-  poemContent: {
-    marginTop: 5,
-    fontSize: 14,
-  },
+
 });
 
 export default HomeView;

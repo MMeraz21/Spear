@@ -22,31 +22,29 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
   };
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#000", // Black background for TikTok-like style
-    },
     poemContainer: {
-      height: height, // Full screen height for each item
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
-      backgroundColor: "#000", // Match screen background
+        height: height,
+        // flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+        backgroundColor: Colors.secondary, 
     },
     title: {
       fontSize: 24,
       fontWeight: "bold",
-      color: "#fff",
+      color: Colors.dark,
       marginBottom: 10,
     },
     content: {
       fontSize: 18,
-      color: "#fff",
+      color: Colors.dark,
       textAlign: "center",
+      maxWidth: '90%'
     },
     author: {
       fontSize: 16,
-      color: "#aaa",
+      color: Colors.dark,
       marginTop: 20,
     },
   });
