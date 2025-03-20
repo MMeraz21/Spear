@@ -5,6 +5,7 @@ const CreateScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Welcome to the Create Screen!</Text>
+      <Text>CreateScreen</Text>
     </View>
   );
 };

@@ -31,10 +31,13 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
         backgroundColor: Colors.secondary, 
     },
     title: {
+      textAlign: "center",
       fontSize: 24,
       fontWeight: "bold",
       color: Colors.dark,
       marginBottom: 10,
+      flexWrap: "wrap",
+      width: "90%"
     },
     content: {
       fontSize: 18,

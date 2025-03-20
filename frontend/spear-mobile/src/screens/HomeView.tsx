@@ -29,13 +29,12 @@ const HomeView: React.FC = () => {
             setLoading(false);
           }
         };
-    
+
         loadPoems();
       }, []);
 
     return (
     <View >
-        {/* <Text style={styles.text}>Welcome to the Home Screen!</Text> */}
         <FlatList
             data={poems}
             renderItem={({ item }) => (
@@ -54,6 +53,7 @@ const HomeView: React.FC = () => {
     </View>
     );
 };
+//ede
 
 const styles = StyleSheet.create({
   container: {
