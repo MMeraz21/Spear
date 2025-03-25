@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  PanResponder
 } from 'react-native';
 import { Colors } from "../constants/colors";
 
@@ -19,13 +20,11 @@ type PoemViewProps = {
 const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
-  // Split content into paragraphs first
   const paragraphs = content.split('\n\n');
 
-  // Function to calculate if a paragraph needs to be split
   const splitParagraph = (paragraph: string) => {
     const lines = paragraph.split('\n');
-    const MAX_LINES = 8; // Adjust based on your screen size and design
+    const MAX_LINES = 8;
 
     if (lines.length <= MAX_LINES) return [paragraph];
 
@@ -47,8 +46,24 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
     }
   };
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dx > 50) {  //swipe right takes you to prev page
+          handlePageChange('prev');
+        }
+        else if (gestureState.dx < -50) {  //swipe left takes you to next page
+          handlePageChange('next');
+        }
+      },
+    })
+  ).current;
+
   return (
-    <View style={styles.poemContainer}>
+    <View style={styles.poemContainer}{...panResponder.panHandlers}>
       <View style={styles.contentWrapper}>
         <Text style={styles.title}>{title}</Text>
 
