@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,11 @@ type PoemViewProps = {
 const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
+  useEffect(() => {
+    console.log(`Updated currentPage: ${currentPage} / ${totalPages}`);
+  }, [currentPage]);
+
+
   const paragraphs = content.split('\n\n');
 
   const splitParagraph = (paragraph: string) => {
@@ -39,25 +44,65 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
   const totalPages = allPages.length;
 
   const handlePageChange = (direction: 'next' | 'prev') => {
-    if (direction === 'next' && currentPage < totalPages - 1) {
-      setCurrentPage(prev => prev + 1);
-    } else if (direction === 'prev' && currentPage > 0) {
-      setCurrentPage(prev => prev - 1);
-    }
+    setCurrentPage((prevPage) => {
+      let newPage = direction === 'next' ? prevPage + 1 : prevPage - 1;
+
+      if (newPage < 0) {
+        console.warn('Attempted to go below first page');
+        return 0; // Prevents going below first page
+      }
+      if (newPage >= totalPages) {
+        console.warn('Attempted to go beyond last page');
+        return totalPages - 1; // Prevents exceeding total pages
+      }
+
+      console.log(`Page changed to ${newPage}`);
+      return newPage;
+    });
+
   };
 
   const panResponder = useRef(
     PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+        const isHorizontalSwipe =
+          Math.abs(gestureState.dx) > 100 &&
+          Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 5;
+
+        console.log('Swipe Check', {
+          isHorizontalSwipe,
+          dx: gestureState.dx,
+          dy: gestureState.dy,
+          currentPage,
+          totalPages
+        });
+
+        return isHorizontalSwipe;
       },
       onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dx > 50) {  //swipe right takes you to prev page
-          handlePageChange('prev');
-        }
-        else if (gestureState.dx < -50) {  //swipe left takes you to next page
-          handlePageChange('next');
-        }
+        console.log('Pan Released', {
+          dx: gestureState.dx,
+          vx: gestureState.vx,
+          currentPage, // Might be stale
+          totalPages
+        });
+
+        const SWIPE_THRESHOLD = 100;
+        const SWIPE_VELOCITY_THRESHOLD = 0.3;
+
+        const isSwipeRight = gestureState.dx > SWIPE_THRESHOLD && gestureState.vx > SWIPE_VELOCITY_THRESHOLD;
+        const isSwipeLeft = gestureState.dx < -SWIPE_THRESHOLD && gestureState.vx < -SWIPE_VELOCITY_THRESHOLD;
+
+        // Use a function to ensure state is up to date
+        setCurrentPage((prevPage) => {
+          if (isSwipeRight && prevPage > 0) {
+            return prevPage - 1;
+          } else if (isSwipeLeft && prevPage < totalPages - 1) {
+            return prevPage + 1;
+          }
+          return prevPage; // No change if conditions aren't met
+        });
       },
     })
   ).current;
