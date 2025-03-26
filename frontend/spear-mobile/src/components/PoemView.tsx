@@ -119,28 +119,6 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
           <Text style={styles.poemContent}>{allPages[currentPage]}</Text>
         </View>
 
-        {totalPages > 1 && (
-          <View style={styles.paginationContainer}>
-            {currentPage > 0 && (
-              <TouchableOpacity
-                style={styles.paginationButton}
-                onPress={() => handlePageChange("prev")}
-              >
-                <Text style={styles.paginationButtonText}>Previous</Text>
-              </TouchableOpacity>
-            )}
-
-            {currentPage < totalPages - 1 && (
-              <TouchableOpacity
-                style={styles.paginationButton}
-                onPress={() => handlePageChange("next")}
-              >
-                <Text style={styles.paginationButtonText}>Next</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-
         <Text style={styles.author}>- {author}</Text>
 
         {totalPages > 1 && (
