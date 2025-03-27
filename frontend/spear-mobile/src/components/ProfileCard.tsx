@@ -17,7 +17,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     <View style={styles.card}>
       <Image
         source={
-          profilePic ? { uri: profilePic } : require("../assets/SpearLogo.png")
+          profilePic
+            ? { uri: profilePic }
+            : require("../../assets/SpearLogo.png")
         }
         style={styles.image}
       />
