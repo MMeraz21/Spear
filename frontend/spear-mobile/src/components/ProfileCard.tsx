@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     marginBottom: 20,
+    width: "100%",
   },
   image: {
     width: 60,
@@ -70,6 +71,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 5,
+    alignItems: "center",
+    width: "50%",
+    justifyContent: "center",
+    marginLeft: 5,
   },
   signOutText: {
     color: "#fff",

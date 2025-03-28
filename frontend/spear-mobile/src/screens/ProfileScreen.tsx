@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import ProfileCard from "../components/ProfileCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Colors } from "../constants/colors";
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useState<{ name: string; picture: string } | null>(
@@ -45,13 +46,16 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {user && (
-        <ProfileCard
-          username={user.name}
-          profilePic={user.picture}
-          onSignOut={handleSignOut}
-        />
-      )}
+      <View style={styles.topSection}>
+        <Text style={styles.headerText}>Profile</Text>
+        {user && (
+          <ProfileCard
+            username={user.name}
+            profilePic={user.picture}
+            onSignOut={handleSignOut}
+          />
+        )}
+      </View>
       <Text style={styles.text}>Welcome to the Profile Screen!</Text>
     </View>
   );
@@ -60,8 +64,10 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.secondary2,
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
   text: {
     fontSize: 20,
@@ -71,6 +77,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "left",
+    alignSelf: "flex-start", // Ensures text is left-aligned
+  },
+  topSection: {
+    width: "100%",
+    alignItems: "flex-start",
   },
 });
 
