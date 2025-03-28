@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import ProfileCard from "../components/ProfileCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "../constants/colors";
+import { useUser } from "../context/UserContext";
 
 const ProfileScreen: React.FC = () => {
-  const [user, setUser] = useState<{ name: string; picture: string } | null>(
-    null,
-  );
+  const { userInfo, setUserInfo } = useUser();
+
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -16,7 +16,17 @@ const ProfileScreen: React.FC = () => {
         const storedUser = await AsyncStorage.getItem("@user");
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          setUser({ name: parsedUser.name, picture: parsedUser.picture });
+          if (
+            parsedUser &&
+            typeof parsedUser.id === "string" &&
+            typeof parsedUser.email === "string" &&
+            typeof parsedUser.name === "string" &&
+            typeof parsedUser.picture === "string"
+          ) {
+            setUserInfo(parsedUser);
+          } else {
+            console.warn("Invalid user data format:", parsedUser);
+          }
         }
       } catch (error) {
         console.error("Error loading user data:", error);
@@ -28,12 +38,28 @@ const ProfileScreen: React.FC = () => {
   }, []);
 
   const handleSignOut = async () => {
-    try {
-      await AsyncStorage.removeItem("@user");
-      setUser(null);
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Sign Out",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem("@user"); // Clear stored user info
+              setUserInfo(null); // Triggers rerender to show SignInView
+            } catch (error) {
+              console.error("Error signing out:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
   };
 
   if (loading) {
@@ -48,10 +74,10 @@ const ProfileScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.topSection}>
         <Text style={styles.headerText}>Profile</Text>
-        {user && (
+        {userInfo && (
           <ProfileCard
-            username={user.name}
-            profilePic={user.picture}
+            username={userInfo.name}
+            profilePic={userInfo.picture}
             onSignOut={handleSignOut}
           />
         )}

@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, ActivityIndicator } from 'react-native';
-import SignInView from './src/screens/SignInView';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  ActivityIndicator,
+} from "react-native";
+import SignInView from "./src/screens/SignInView";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { loadFonts } from './src/theme/fonts';
+import { loadFonts } from "./src/theme/fonts";
 import { Ionicons } from "@expo/vector-icons"; // Icon library
-import HomeView from './src/screens/HomeView';
-import { Colors } from './src/constants/colors';
-import ProfileScreen from './src/screens/ProfileScreen';
-import CreateScreen from './src/screens/CreateScreen';
-import FloatingButton from './src/components/FloatingButton';
-
+import HomeView from "./src/screens/HomeView";
+import { Colors } from "./src/constants/colors";
+import ProfileScreen from "./src/screens/ProfileScreen";
+import CreateScreen from "./src/screens/CreateScreen";
+import FloatingButton from "./src/components/FloatingButton";
+import { UserProvider, useUser } from "./src/context/UserContext";
 
 // Define a type for userInfo
 type UserInfo = {
@@ -22,18 +28,17 @@ type UserInfo = {
 };
 
 type BottomTabParamList = {
-  Home: undefined;      
-  Profile: undefined;   
-  Settings: undefined;  
-  Create: undefined; 
+  Home: undefined;
+  Profile: undefined;
+  Settings: undefined;
+  Create: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-
-const App: React.FC = () => {
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null); // Explicitly define the type
-  const[fontsLoaded, setFontsLoaded] = useState(false);
+const MainApp: React.FC = () => {
+  const { userInfo, setUserInfo } = useUser(); // Explicitly define the type
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   const handleUserInfoReceived = (user: UserInfo) => {
     setUserInfo(user);
@@ -85,19 +90,24 @@ const App: React.FC = () => {
               name="Create"
               component={CreateScreen} // Replace with your "Create" screen
               options={{
-                tabBarButton: (props) => (
-                  <FloatingButton navigateTo="Create" /> 
-                ),
+                tabBarButton: (props) => <FloatingButton navigateTo="Create" />,
               }}
             />
             <Tab.Screen name="Profile" component={ProfileScreen} />
           </Tab.Navigator>
-      </NavigationContainer>
-        
+        </NavigationContainer>
       ) : (
         <SignInView onUserInfoReceived={handleUserInfoReceived} />
       )}
     </View>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <UserProvider>
+      <MainApp />
+    </UserProvider>
   );
 };
 
@@ -107,16 +117,15 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   welcomeText: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
 });
 
 export default App;
-
