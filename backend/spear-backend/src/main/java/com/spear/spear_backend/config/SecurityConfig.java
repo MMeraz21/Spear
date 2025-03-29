@@ -23,6 +23,8 @@ public class SecurityConfig {
             .disable() // For API-based authentication, typically CSRF is disabled
             .authorizeHttpRequests(authorize ->
                 authorize
+                    .requestMatchers("/api/poems")
+                    .permitAll() // Make poems endpoint public, important for testing right now
                     .requestMatchers("/api/auth/google")
                     .permitAll() // The endpoint to receive tokens from app
                     .requestMatchers("/api/**")
