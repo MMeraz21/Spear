@@ -12,7 +12,7 @@ public class User {
     private String id;
 
     private String email;
-    private String name;
+    private String username;
     private String picture;
     private String oauthProvider;
     private String oauthProviderId;
@@ -25,7 +25,7 @@ public class User {
         String oauthProviderId
     ) {
         this.email = email;
-        this.name = name;
+        this.username = name;
         this.picture = picture;
         this.oauthProvider = oauthProvider;
         this.oauthProviderId = oauthProviderId;
@@ -47,12 +47,12 @@ public class User {
         this.email = email;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     public String getPicture() {
