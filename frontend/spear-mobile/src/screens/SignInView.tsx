@@ -1,23 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Svg, { Path } from 'react-native-svg';
+import React, { useEffect, useState } from "react";
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';  
-import CustomGoogleButton from '../components/CustomGoogleButton';
-import { Colors } from '../constants/colors';
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Svg, { Path } from "react-native-svg";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import CustomGoogleButton from "../components/CustomGoogleButton";
+import { Colors } from "../constants/colors";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_LOGO_URL = 'https://developers.google.com/identity/images/g-logo.png';
+const GOOGLE_LOGO_URL =
+  "https://developers.google.com/identity/images/g-logo.png";
+const BACKEND_URL = "http://localhost:8080/api/";
 
-
-
-const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({ onUserInfoReceived }) => {
+const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
+  onUserInfoReceived,
+}) => {
   const [userInfo, setUserInfo] = useState<any | null>(null); // State for user data
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.IOS_CLIENT_ID,
@@ -25,8 +34,8 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
 
   useEffect(() => {
     const handleGoogleSignIn = async () => {
-      const storedUser = await AsyncStorage.getItem('@user');
-      if (!storedUser && response?.type === 'success') {
+      const storedUser = await AsyncStorage.getItem("@user");
+      if (!storedUser && response?.type === "success") {
         await fetchUserInfo(response.authentication?.accessToken);
       } else if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
@@ -40,25 +49,28 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
   const fetchUserInfo = async (token: string | null | undefined) => {
     if (!token) return;
     try {
-      const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const userInfo = await response.json();
-      await AsyncStorage.setItem('@user', JSON.stringify(userInfo));
+      await AsyncStorage.setItem("@user", JSON.stringify(userInfo));
       setUserInfo(userInfo);
       onUserInfoReceived(userInfo);
     } catch (error) {
-      console.error('Error fetching user info:', error);
+      console.error("Error fetching user info:", error);
     }
   };
 
   const handleSignOut = async () => {
     try {
-      await AsyncStorage.removeItem('@user');
+      await AsyncStorage.removeItem("@user");
       setUserInfo(null); // Clear state
-      Alert.alert('Signed Out', 'You have successfully signed out.');
+      Alert.alert("Signed Out", "You have successfully signed out.");
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -69,7 +81,7 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
         <Text style={styles.title}>Spear</Text>
         <View style={styles.imageContainer}>
           <Image
-            source={require('../../assets/SpearLogo.png')}
+            source={require("../../assets/SpearLogo.png")}
             style={styles.image}
           />
         </View>
@@ -84,51 +96,50 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1, 
-        backgroundColor: Colors.primary,
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-      },
-      container1: {
-        backgroundColor: Colors.secondary,
-        width: '100%', 
-        height: hp('45%'), 
-        borderBottomLeftRadius: 100, 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        position: 'absolute', 
-        top: 0, 
-        paddingHorizontal: 20, // Add padding for better left alignment
-
-      },
-      title: {
-        fontSize: 36,
-        fontWeight: 'bold',
-        color: Colors.primary3,
-        textAlign: 'left',
-        marginBottom: 40, 
-        fontFamily: 'NimbusSansL-Bold',
-        alignSelf: 'flex-start', // Ensures title aligns left within the parent
-      },
-      image: {
-        height: 80,
-        width: 80,
-        resizeMode: 'contain', 
-      },
-      imageContainer: {
-        backgroundColor: 'white',
-        borderRadius: 40, 
-        padding: 10, 
-        overflow: 'hidden', 
-        alignSelf: 'center',
-      },
-      buttonContainer: {
-        flex: 1, 
-        justifyContent: 'flex-end', 
-        alignItems: 'center', 
-        marginBottom: 132, 
-      },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.primary,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  container1: {
+    backgroundColor: Colors.secondary,
+    width: "100%",
+    height: hp("45%"),
+    borderBottomLeftRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    paddingHorizontal: 20, // Add padding for better left alignment
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: Colors.primary3,
+    textAlign: "left",
+    marginBottom: 40,
+    fontFamily: "NimbusSansL-Bold",
+    alignSelf: "flex-start", // Ensures title aligns left within the parent
+  },
+  image: {
+    height: 80,
+    width: 80,
+    resizeMode: "contain",
+  },
+  imageContainer: {
+    backgroundColor: "white",
+    borderRadius: 40,
+    padding: 10,
+    overflow: "hidden",
+    alignSelf: "center",
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginBottom: 132,
+  },
 });
 
 export default SignInView;
