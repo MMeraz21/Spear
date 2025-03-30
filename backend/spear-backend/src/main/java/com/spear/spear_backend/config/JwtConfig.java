@@ -1,6 +1,5 @@
 package com.spear.spear_backend.config;
 
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -23,14 +22,13 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 @Configuration
 public class JwtConfig {
 
-    private RSAKey rsaKey;
+    private final RSAKey rsaKey;
 
     public JwtConfig() {
         // Generate the RSA key pair during initialization
         KeyPair keyPair = generateRsaKey();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
         this.rsaKey = new RSAKey.Builder(publicKey)
             .privateKey(privateKey)
             .keyID(UUID.randomUUID().toString())
@@ -44,7 +42,7 @@ public class JwtConfig {
             return NimbusJwtDecoder.withPublicKey(
                 rsaKey.toRSAPublicKey()
             ).build();
-        } catch (JOSEException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to create JWT decoder", e);
         }
     }

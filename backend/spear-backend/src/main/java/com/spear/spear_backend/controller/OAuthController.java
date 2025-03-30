@@ -5,14 +5,11 @@ import com.spear.spear_backend.services.UserService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -25,16 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class OAuthController {
 
     private final UserService userService;
+    private final JwtDecoder googleJwtDecoder;
+    private final JwtEncoder jwtEncoder;
 
     @Autowired
-    @Qualifier("googleJwtDecoder")
-    private JwtDecoder googleJwtDecoder;
-
-    private final JwtEncoder jwtEncoder; // For creating your app tokens
-
     public OAuthController(
         UserService userService,
-        JwtDecoder googleJwtDecoder, // This will be injected from SecurityConfig
+        @Qualifier("googleJwtDecoder") JwtDecoder googleJwtDecoder,
         JwtEncoder jwtEncoder
     ) {
         this.userService = userService;
@@ -47,19 +41,22 @@ public class OAuthController {
         @RequestParam String idToken
     ) {
         try {
-            Jwt googleJwt = null;
+            System.out.println(
+                "Received request with idToken: " +
+                idToken.substring(0, 20) +
+                "..."
+            );
+
             // Validate the Google ID token
-            System.out.println("googleJwtDecoder: " + googleJwtDecoder);
-            System.out.println("Received request with idToken: " + idToken);
+            Jwt googleJwt;
             try {
-                System.out.println("Decoding token...");
                 googleJwt = googleJwtDecoder.decode(idToken);
-                System.out.println("Decoded token: " + googleJwt);
+                System.out.println("Successfully decoded token");
             } catch (Exception e) {
-                System.err.println(
-                    "Error while decoding token: " + e.getMessage()
-                );
+                System.err.println("Error decoding token: " + e.getMessage());
                 e.printStackTrace();
+                return ResponseEntity.badRequest()
+                    .body("Invalid token: " + e.getMessage());
             }
 
             // Extract user details from the token
@@ -70,7 +67,10 @@ public class OAuthController {
 
             System.out.println("User email: " + email);
             System.out.println("User name: " + name);
-            System.out.println("User picture: " + picture);
+            System.out.println(
+                "User picture: " +
+                (picture != null ? "provided" : "not provided")
+            );
             System.out.println("User OAuth provider ID: " + oauthProviderId);
 
             // Register or update the user in your database
@@ -84,7 +84,6 @@ public class OAuthController {
 
             // Create your own JWT token for subsequent API calls
             String appToken = generateToken(user);
-            System.out.println("Sending token: " + appToken);
 
             // Return the token to the client
             Map<String, Object> response = new HashMap<>();
@@ -93,8 +92,10 @@ public class OAuthController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("Authentication failed: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest()
-                .body("Invalid token: " + e.getMessage());
+                .body("Authentication failed: " + e.getMessage());
         }
     }
 
