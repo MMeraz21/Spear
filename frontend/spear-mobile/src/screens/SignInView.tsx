@@ -34,15 +34,21 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
 
   useEffect(() => {
     const handleGoogleSignIn = async () => {
+      const storedToken = await AsyncStorage.getItem("@authToken");
       const storedUser = await AsyncStorage.getItem("@user");
-      if (!storedUser && response?.type === "success") {
-        await fetchUserInfo(response.authentication?.accessToken);
-      } else if (storedUser) {
+
+      if (storedToken && storedUser) {
+        // User already logged in
         const parsedUser = JSON.parse(storedUser);
         setUserInfo(parsedUser);
         onUserInfoReceived(parsedUser);
+      } else if (response?.type === "success") {
+        // New login - authenticate with backend
+        console.log(response.authentication?.accessToken);
+        await authenticateWithBackend(response.authentication?.accessToken);
       }
     };
+
     handleGoogleSignIn();
   }, [response]);
 
@@ -56,17 +62,52 @@ const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
         },
       );
       const userInfo = await response.json();
+      console.log(userInfo);
       await AsyncStorage.setItem("@user", JSON.stringify(userInfo));
       setUserInfo(userInfo);
       onUserInfoReceived(userInfo);
+      return userInfo;
     } catch (error) {
       console.error("Error fetching user info:", error);
+      return null;
+    }
+  };
+
+  const authenticateWithBackend = async (
+    googleToken: string | null | undefined,
+  ) => {
+    try {
+      const userInfo = await fetchUserInfo(googleToken);
+      if (!userInfo) return;
+      // Send google token to backend
+      const response = await fetch(`${BACKEND_URL}auth/google`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: googleToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to authenticate with backend");
+      }
+      const data = await response.json();
+      const jwtToken = data.token;
+      await AsyncStorage.setItem("authToken", jwtToken);
+      console.log("Successfully authenticated with backend");
+    } catch (error) {
+      console.error("Error authenticating with backend:", error);
+      Alert.alert(
+        "Authentication Error",
+        "Failed to authenticate with backend",
+      );
     }
   };
 
   const handleSignOut = async () => {
     try {
       await AsyncStorage.removeItem("@user");
+      await AsyncStorage.removeItem("authToken");
       setUserInfo(null); // Clear state
       Alert.alert("Signed Out", "You have successfully signed out.");
     } catch (error) {
