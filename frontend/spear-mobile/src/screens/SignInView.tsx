@@ -10,7 +10,6 @@ import {
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Svg, { Path } from "react-native-svg";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -18,97 +17,106 @@ import {
 import CustomGoogleButton from "../components/CustomGoogleButton";
 import { Colors } from "../constants/colors";
 
+type SignInViewProps = {
+  onUserInfoReceived: (user: any) => void; // Adjust the type of 'user' if you have a defined user type
+};
+
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_LOGO_URL =
-  "https://developers.google.com/identity/images/g-logo.png";
-const BACKEND_URL = "http://localhost:8080/api/";
+const BACKEND_URL = "http://localhost:8080";
 
-const SignInView: React.FC<{ onUserInfoReceived: (userInfo: any) => void }> = ({
-  onUserInfoReceived,
-}) => {
-  const [userInfo, setUserInfo] = useState<any | null>(null); // State for user data
+const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
+  const [userInfo, setUserInfo] = useState(null);
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.IOS_CLIENT_ID,
   });
 
   useEffect(() => {
-    const handleGoogleSignIn = async () => {
-      const storedToken = await AsyncStorage.getItem("@authToken");
-      const storedUser = await AsyncStorage.getItem("@user");
+    const checkExistingAuth = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem("@authToken");
+        const storedUser = await AsyncStorage.getItem("@user");
 
-      if (storedToken && storedUser) {
-        // User already logged in
-        const parsedUser = JSON.parse(storedUser);
-        setUserInfo(parsedUser);
-        onUserInfoReceived(parsedUser);
-      } else if (response?.type === "success") {
-        // New login - authenticate with backend
-        console.log(response.authentication?.accessToken);
-        await authenticateWithBackend(response.authentication?.accessToken);
+        if (storedToken && storedUser) {
+          // User already logged in
+          const parsedUser = JSON.parse(storedUser);
+          setUserInfo(parsedUser);
+          onUserInfoReceived(parsedUser);
+        }
+      } catch (error) {
+        console.error("Error checking auth state:", error);
+      }
+    };
+
+    checkExistingAuth();
+  }, []);
+
+  useEffect(() => {
+    const handleGoogleSignIn = async () => {
+      if (response?.type === "success") {
+        try {
+          const { authentication } = response;
+          // Get user info from Google
+          const userInfoResponse = await fetch(
+            "https://www.googleapis.com/userinfo/v2/me",
+            {
+              headers: {
+                Authorization: `Bearer ${authentication?.accessToken}`,
+              },
+            },
+          );
+
+          const googleUserInfo = await userInfoResponse.json();
+
+          // Get ID token - this is what your backend expects
+          const idToken = authentication?.idToken;
+          console.log("ID Token:", idToken);
+          // Send ID token to your backend
+          const backendResponse = await fetch(
+            `${BACKEND_URL}/api/auth/google?idToken=${idToken}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            },
+          );
+
+          if (!backendResponse.ok) {
+            throw new Error("Failed to authenticate with backend");
+          }
+
+          const authData = await backendResponse.json();
+
+          // Store the JWT token from your backend
+          await AsyncStorage.setItem("@authToken", authData.token);
+
+          // Store user info
+          await AsyncStorage.setItem("@user", JSON.stringify(authData.user));
+
+          // Update state and pass to parent
+          setUserInfo(authData.user);
+          onUserInfoReceived(authData.user);
+
+          console.log("Successfully authenticated with backend");
+        } catch (error) {
+          console.error("Authentication error:", error);
+          Alert.alert(
+            "Authentication Error",
+            "Failed to authenticate with server",
+          );
+        }
       }
     };
 
     handleGoogleSignIn();
   }, [response]);
 
-  const fetchUserInfo = async (token: string | null | undefined) => {
-    if (!token) return;
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/userinfo/v2/me",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      const userInfo = await response.json();
-      console.log(userInfo);
-      await AsyncStorage.setItem("@user", JSON.stringify(userInfo));
-      setUserInfo(userInfo);
-      onUserInfoReceived(userInfo);
-      return userInfo;
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-      return null;
-    }
-  };
-
-  const authenticateWithBackend = async (
-    googleToken: string | null | undefined,
-  ) => {
-    try {
-      const userInfo = await fetchUserInfo(googleToken);
-      if (!userInfo) return;
-      // Send google token to backend
-      const response = await fetch(`${BACKEND_URL}auth/google`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token: googleToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to authenticate with backend");
-      }
-      const data = await response.json();
-      const jwtToken = data.token;
-      await AsyncStorage.setItem("authToken", jwtToken);
-      console.log("Successfully authenticated with backend");
-    } catch (error) {
-      console.error("Error authenticating with backend:", error);
-      Alert.alert(
-        "Authentication Error",
-        "Failed to authenticate with backend",
-      );
-    }
-  };
-
   const handleSignOut = async () => {
     try {
       await AsyncStorage.removeItem("@user");
-      await AsyncStorage.removeItem("authToken");
-      setUserInfo(null); // Clear state
+      await AsyncStorage.removeItem("@authToken");
+      setUserInfo(null);
       Alert.alert("Signed Out", "You have successfully signed out.");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -152,7 +160,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     top: 0,
-    paddingHorizontal: 20, // Add padding for better left alignment
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 36,
@@ -161,7 +169,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
     marginBottom: 40,
     fontFamily: "NimbusSansL-Bold",
-    alignSelf: "flex-start", // Ensures title aligns left within the parent
+    alignSelf: "flex-start",
   },
   image: {
     height: 80,
