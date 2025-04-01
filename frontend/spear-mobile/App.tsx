@@ -19,13 +19,14 @@ import CreateScreen from "./src/screens/CreateScreen";
 import FloatingButton from "./src/components/FloatingButton";
 import { UserProvider, useUser } from "./src/context/UserContext";
 
-// Define a type for userInfo
 type UserInfo = {
   id: string;
   email: string;
-  name: string;
+  userName: string;
   picture: string;
-};
+  oauthProvider: string;
+  oauthProviderId: string;
+} | null;
 
 type BottomTabParamList = {
   Home: undefined;
