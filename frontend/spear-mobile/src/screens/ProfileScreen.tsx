@@ -76,7 +76,7 @@ const ProfileScreen: React.FC = () => {
         <Text style={styles.headerText}>Profile</Text>
         {userInfo && (
           <ProfileCard
-            username={userInfo.name}
+            username={userInfo.userName}
             profilePic={userInfo.picture}
             onSignOut={handleSignOut}
           />

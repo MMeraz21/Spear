@@ -12,20 +12,20 @@ public class User {
     private String id;
 
     private String email;
-    private String username;
+    private String userName;
     private String picture;
     private String oauthProvider;
     private String oauthProviderId;
 
     public User(
         String email,
-        String name,
+        String userName,
         String picture,
         String oauthProvider,
         String oauthProviderId
     ) {
         this.email = email;
-        this.username = name;
+        this.userName = userName;
         this.picture = picture;
         this.oauthProvider = oauthProvider;
         this.oauthProviderId = oauthProviderId;
@@ -48,11 +48,11 @@ public class User {
     }
 
     public String getUserName() {
-        return username;
+        return userName;
     }
 
     public void setUserName(String username) {
-        this.username = username;
+        this.userName = username;
     }
 
     public String getPicture() {
