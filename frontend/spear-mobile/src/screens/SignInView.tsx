@@ -93,6 +93,7 @@ const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
 
           // Store user info
           await AsyncStorage.setItem("@user", JSON.stringify(authData.user));
+          console.log("User Info:", authData.user);
 
           // Update state and pass to parent
           setUserInfo(authData.user);

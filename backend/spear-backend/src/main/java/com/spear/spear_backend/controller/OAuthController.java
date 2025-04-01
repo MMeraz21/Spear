@@ -75,13 +75,14 @@ public class OAuthController {
 
             // Register or update the user in your database
             User user = userService.registerOrUpdateUser(
-                "google",
-                oauthProviderId,
                 email,
                 name,
-                picture
+                picture,
+                "google",
+                oauthProviderId
             );
 
+            System.out.println("User NAME: " + user.getUserName());
             // Create your own JWT token for subsequent API calls
             String appToken = generateToken(user);
 
@@ -106,7 +107,7 @@ public class OAuthController {
             .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS))
             .subject(user.getId().toString())
             .claim("email", user.getEmail())
-            .claim("name", user.getUserName())
+            .claim("userName", user.getUserName()) //CHANGE HERE
             .build();
 
         return jwtEncoder

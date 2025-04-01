@@ -15,11 +15,11 @@ public class UserService {
     }
 
     public User registerOrUpdateUser(
-        String oauthProvider,
-        String oauthProviderId,
         String email,
         String name,
-        String picture
+        String picture,
+        String oauthProvider,
+        String oauthProviderId
     ) {
         // Check if user already exists
         Optional<User> existingUser =
@@ -33,13 +33,13 @@ public class UserService {
         } else {
             // Create a new user if not found
             User newUser = new User(
-                email,
-                name,
-                picture,
-                oauthProvider,
-                oauthProviderId
+                email, // email
+                name, // userName
+                picture, // picture
+                oauthProvider, // oauthProvider
+                oauthProviderId // oauthProviderId
             );
-            return userRepository.save(newUser); // Save the new user to the database
+            return userRepository.save(newUser);
         }
     }
 

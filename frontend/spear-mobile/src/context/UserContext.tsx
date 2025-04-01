@@ -5,6 +5,8 @@ type UserInfo = {
   email: string;
   userName: string;
   picture: string;
+  oauthProvider: string; // Added
+  oauthProviderId: string; // Added
 } | null;
 
 type UserContextType = {

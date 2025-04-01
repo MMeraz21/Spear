@@ -20,7 +20,7 @@ const ProfileScreen: React.FC = () => {
             parsedUser &&
             typeof parsedUser.id === "string" &&
             typeof parsedUser.email === "string" &&
-            typeof parsedUser.name === "string" &&
+            typeof parsedUser.userName === "string" &&
             typeof parsedUser.picture === "string"
           ) {
             setUserInfo(parsedUser);
