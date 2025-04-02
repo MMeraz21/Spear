@@ -81,7 +81,6 @@ public class OAuthController {
                 "google",
                 oauthProviderId
             );
-
             System.out.println("User NAME: " + user.getUserName());
             // Create your own JWT token for subsequent API calls
             String appToken = generateToken(user);

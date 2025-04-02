@@ -8,6 +8,7 @@ import {
   PanResponder,
 } from "react-native";
 import { Colors } from "../constants/colors";
+import InteractionBar from "./InteractionBar";
 
 const { height, width } = Dimensions.get("window");
 
@@ -127,6 +128,7 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
           </Text>
         )}
       </View>
+      <InteractionBar />
     </View>
   );
 };
