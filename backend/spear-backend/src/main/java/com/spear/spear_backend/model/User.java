@@ -1,5 +1,7 @@
 package com.spear.spear_backend.model;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -16,6 +18,9 @@ public class User {
     private String picture;
     private String oauthProvider;
     private String oauthProviderId;
+
+    @DBRef
+    private Set<Poem> likedPoems = new HashSet<>();
 
     public User(
         String email,
@@ -73,5 +78,17 @@ public class User {
 
     public void setOauthProviderId(String oauthProviderId) {
         this.oauthProviderId = oauthProviderId;
+    }
+
+    public Set<Poem> getLikedPoems() {
+        return likedPoems;
+    }
+
+    public void likePoem(Poem poem) {
+        this.likedPoems.add(poem);
+    }
+
+    public void unlikePoem(Poem poem) {
+        this.likedPoems.remove(poem);
     }
 }
