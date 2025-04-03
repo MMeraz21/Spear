@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -76,15 +77,40 @@ const PoemView: React.FC<PoemViewProps> = ({
     if (liked) return;
 
     try {
+      // Retrieve the stored authentication token
+      const token = await AsyncStorage.getItem("@authToken");
+
+      if (!token) {
+        console.error("No auth token found. User must be logged in.");
+        return;
+      }
+
       const response = await axios.put(
         `http://localhost:8080/api/poems/${id}/like`,
+        {}, // Empty request body if needed
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ Send the token in the request
+            "Content-Type": "application/json",
+          },
+        },
       );
+
       if (response.status === 200) {
         setCurrLikes((prev) => prev + 1);
         setLiked(true);
       }
-    } catch (error) {
-      console.error("Error liking poem:", error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error liking poem:",
+          error.response?.data || error.message,
+        );
+      } else if (error instanceof Error) {
+        console.error("Unexpected error:", error.message);
+      } else {
+        console.error("An unknown error occurred.");
+      }
     }
   };
 
