@@ -77,22 +77,27 @@ const PoemView: React.FC<PoemViewProps> = ({
     if (liked) return;
 
     try {
-      // Retrieve the stored authentication token
-      const token = await AsyncStorage.getItem("@authToken");
+      const token = await AsyncStorage.getItem("@authToken"); // Get JWT token
+      const userEmail = await AsyncStorage.getItem("@user"); // Get user info
 
-      if (!token) {
-        console.error("No auth token found. User must be logged in.");
+      if (!token || !userEmail) {
+        console.error("No auth token or user info found.");
+        return;
+      }
+
+      const parsedUser = JSON.parse(userEmail); // Parse the stored user
+      const email = parsedUser?.email || ""; // Ensure email is a string
+
+      if (!email) {
+        console.error("User email is missing.");
         return;
       }
 
       const response = await axios.put(
-        `http://localhost:8080/api/poems/${id}/like`,
-        {}, // Empty request body if needed
+        `http://localhost:8080/api/users/${email}/like/${id}`,
+        {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ Send the token in the request
-            "Content-Type": "application/json",
-          },
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
 
@@ -100,17 +105,8 @@ const PoemView: React.FC<PoemViewProps> = ({
         setCurrLikes((prev) => prev + 1);
         setLiked(true);
       }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "Error liking poem:",
-          error.response?.data || error.message,
-        );
-      } else if (error instanceof Error) {
-        console.error("Unexpected error:", error.message);
-      } else {
-        console.error("An unknown error occurred.");
-      }
+    } catch (error) {
+      console.error("Error liking poem:", error);
     }
   };
 
