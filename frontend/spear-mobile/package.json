@@ -17,6 +17,7 @@
     "@react-native-google-signin/google-signin": "^13.1.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
+    "axios": "^1.8.4",
     "crypto-browserify": "^3.12.1",
     "expo": "~50.0.17",
     "expo-auth-session": "~5.4.0",

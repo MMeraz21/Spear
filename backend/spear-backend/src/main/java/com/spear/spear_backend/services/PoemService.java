@@ -2,13 +2,12 @@ package com.spear.spear_backend.services;
 
 import com.spear.spear_backend.model.Poem;
 import com.spear.spear_backend.repository.PoemRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class PoemService {
@@ -17,12 +16,12 @@ public class PoemService {
     private PoemRepository poemRepository;
 
     public Poem getPoemById(String id) {
-        return poemRepository.findById(id).orElse(null);  
+        return poemRepository.findById(id).orElse(null);
     }
 
     public Page<Poem> getPoemsByAuthorId(String authorId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size); // Creating pageable object for pagination
-        return poemRepository.findByAuthorId(authorId, pageRequest);  // Passing the Pageable parameter
+        return poemRepository.findByAuthorId(authorId, pageRequest); // Passing the Pageable parameter
     }
 
     public List<Poem> getAllPoems() {
@@ -30,18 +29,31 @@ public class PoemService {
         return poemRepository.findAll();
     }
 
-    public Page<Poem> searchPoems(String title, String authorId, List<String> tags, String content, int page, int size) {
+    public Page<Poem> searchPoems(
+        String title,
+        String authorId,
+        List<String> tags,
+        String content,
+        int page,
+        int size
+    ) {
         // Create query filters based on provided search parameters
-        PageRequest pageRequest = PageRequest.of(page,size);
+        PageRequest pageRequest = PageRequest.of(page, size);
         // Create query filters based on provided search parameters
         if (title != null && !title.isEmpty()) {
-            return poemRepository.findByTitleContainingIgnoreCase(title, pageRequest);
+            return poemRepository.findByTitleContainingIgnoreCase(
+                title,
+                pageRequest
+            );
         } else if (authorId != null && !authorId.isEmpty()) {
             return poemRepository.findByAuthorId(authorId, pageRequest);
         } else if (tags != null && !tags.isEmpty()) {
             return poemRepository.findByTagsIn(tags, pageRequest);
         } else if (content != null && !content.isEmpty()) {
-            return poemRepository.findByContentContainingIgnoreCase(content, pageRequest);
+            return poemRepository.findByContentContainingIgnoreCase(
+                content,
+                pageRequest
+            );
         } else {
             return poemRepository.findAll(pageRequest); // Return all poems with pagination
         }
@@ -57,5 +69,14 @@ public class PoemService {
         poem.setDeleted(false);
         return poemRepository.save(poem);
     }
-}
 
+    public Poem likePoem(String poemId) {
+        Poem poem = poemRepository.findById(poemId).orElse(null);
+        if (poem != null) {
+            poem.setLikes(poem.getLikes() + 1);
+            poem.setUpdatedAt(LocalDateTime.now());
+            return poemRepository.save(poem);
+        }
+        return null;
+    }
+}

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Colors } from "../constants/colors";
 import InteractionBar from "./InteractionBar";
+import axios from "axios";
 
 const { height, width } = Dimensions.get("window");
 
@@ -16,10 +17,20 @@ type PoemViewProps = {
   title: string;
   content: string;
   author: string;
+  likes: number;
+  id: string;
 };
 
-const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
+const PoemView: React.FC<PoemViewProps> = ({
+  title,
+  content,
+  author,
+  likes,
+  id,
+}) => {
   const [currentPage, setCurrentPage] = useState(0);
+  const [currLikes, setCurrLikes] = useState(likes);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     console.log(`Updated currentPage: ${currentPage} / ${totalPages}`);
@@ -59,6 +70,22 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
       console.log(`Page changed to ${newPage}`);
       return newPage;
     });
+  };
+
+  const handleLike = async () => {
+    if (liked) return;
+
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/poems/${id}/like`,
+      );
+      if (response.status === 200) {
+        setCurrLikes((prev) => prev + 1);
+        setLiked(true);
+      }
+    } catch (error) {
+      console.error("Error liking poem:", error);
+    }
   };
 
   const panResponder = useRef(
@@ -128,7 +155,12 @@ const PoemView: React.FC<PoemViewProps> = ({ title, content, author }) => {
           </Text>
         )}
       </View>
-      <InteractionBar />
+      <InteractionBar
+        poemId={id}
+        likes={likes}
+        liked={liked}
+        onLike={handleLike}
+      />
     </View>
   );
 };

@@ -3,11 +3,28 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "../constants/colors";
 
-const InteractionBar = () => {
+type InteractionBarProps = {
+  poemId: string;
+  likes: number;
+  liked: boolean;
+  onLike: () => void; // Function to handle like action
+};
+
+const InteractionBar = ({
+  poemId,
+  likes,
+  liked,
+  onLike,
+}: InteractionBarProps) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button}>
-        <FontAwesome name="heart-o" size={30} color={Colors.primary} />
+        <FontAwesome
+          name="heart-o"
+          size={30}
+          color={Colors.primary}
+          onPress={onLike}
+        />
         <Text style={styles.label}>123</Text>
       </TouchableOpacity>
 
