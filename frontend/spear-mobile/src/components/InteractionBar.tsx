@@ -20,7 +20,7 @@ const InteractionBar = ({
     <View style={styles.container}>
       <TouchableOpacity style={styles.button}>
         <FontAwesome
-          name="heart-o"
+          name={liked ? "heart" : "heart-o"}
           size={30}
           color={Colors.primary}
           onPress={onLike}
