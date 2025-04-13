@@ -18,6 +18,7 @@ import ProfileScreen from "./src/screens/ProfileScreen";
 import CreateScreen from "./src/screens/CreateScreen";
 import FloatingButton from "./src/components/FloatingButton";
 import { UserProvider, useUser } from "./src/context/UserContext";
+import { Poem } from "./src/api/poems";
 
 type UserInfo = {
   id: string;
@@ -26,6 +27,7 @@ type UserInfo = {
   picture: string;
   oauthProvider: string;
   oauthProviderId: string;
+  likes: Poem[];
 } | null;
 
 type BottomTabParamList = {

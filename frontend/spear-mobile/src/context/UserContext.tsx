@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { Poem } from "../api/poems";
 
 type UserInfo = {
   id: string;
   email: string;
   userName: string;
   picture: string;
-  oauthProvider: string; // Added
-  oauthProviderId: string; // Added
+  oauthProvider: string;
+  oauthProviderId: string;
+  likes: Poem[];
 } | null;
 
 type UserContextType = {

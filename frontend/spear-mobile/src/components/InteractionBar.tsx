@@ -25,7 +25,7 @@ const InteractionBar = ({
           color={Colors.primary}
           onPress={onLike}
         />
-        <Text style={styles.label}>123</Text>
+        <Text style={styles.label}>{likes}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button}>
