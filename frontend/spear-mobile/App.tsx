@@ -43,9 +43,9 @@ const MainApp: React.FC = () => {
   const { userInfo, setUserInfo } = useUser(); // Explicitly define the type
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  const handleUserInfoReceived = (user: UserInfo) => {
-    setUserInfo(user);
-  };
+  // const handleUserInfoReceived = (user: UserInfo) => {
+  //   setUserInfo(user);
+  // };
 
   useEffect(() => {
     const loadAppFonts = async () => {
@@ -100,7 +100,7 @@ const MainApp: React.FC = () => {
           </Tab.Navigator>
         </NavigationContainer>
       ) : (
-        <SignInView onUserInfoReceived={handleUserInfoReceived} />
+        <SignInView />
       )}
     </View>
   );

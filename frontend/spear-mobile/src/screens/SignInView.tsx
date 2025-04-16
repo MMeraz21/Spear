@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -16,20 +16,18 @@ import {
 } from "react-native-responsive-screen";
 import CustomGoogleButton from "../components/CustomGoogleButton";
 import { Colors } from "../constants/colors";
-
-type SignInViewProps = {
-  onUserInfoReceived: (user: any) => void; // Adjust the type of 'user' if you have a defined user type
-};
+import { useUser } from "../context/UserContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = "http://localhost:8080"; // Change for production
 
-const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
-  const [userInfo, setUserInfo] = useState(null);
+const SignInView: React.FC = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.IOS_CLIENT_ID,
   });
+
+  const { setUserInfo } = useUser(); // ✅ Use context
 
   useEffect(() => {
     const checkExistingAuth = async () => {
@@ -38,10 +36,8 @@ const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
         const storedUser = await AsyncStorage.getItem("@user");
 
         if (storedToken && storedUser) {
-          // User already logged in
           const parsedUser = JSON.parse(storedUser);
-          setUserInfo(parsedUser);
-          onUserInfoReceived(parsedUser);
+          setUserInfo(parsedUser); // ✅ Set user in context
         }
       } catch (error) {
         console.error("Error checking auth state:", error);
@@ -56,22 +52,19 @@ const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
       if (response?.type === "success") {
         try {
           const { authentication } = response;
-          // Get user info from Google
+
           const userInfoResponse = await fetch(
             "https://www.googleapis.com/userinfo/v2/me",
             {
               headers: {
                 Authorization: `Bearer ${authentication?.accessToken}`,
               },
-            },
+            }
           );
 
           const googleUserInfo = await userInfoResponse.json();
-
-          // Get ID token - this is what your backend expects
           const idToken = authentication?.idToken;
-          console.log("ID Token:", idToken);
-          // Send ID token to your backend
+
           const backendResponse = await fetch(
             `${BACKEND_URL}/api/auth/google?idToken=${idToken}`,
             {
@@ -79,7 +72,7 @@ const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
               headers: {
                 "Content-Type": "application/json",
               },
-            },
+            }
           );
 
           if (!backendResponse.ok) {
@@ -88,23 +81,15 @@ const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
 
           const authData = await backendResponse.json();
 
-          // Store the JWT token from your backend
           await AsyncStorage.setItem("@authToken", authData.token);
-
-          // Store user info
           await AsyncStorage.setItem("@user", JSON.stringify(authData.user));
-          console.log("User Info:", authData.user);
 
-          // Update state and pass to parent
-          setUserInfo(authData.user);
-          onUserInfoReceived(authData.user);
-
-          console.log("Successfully authenticated with backend");
+          setUserInfo(authData.user); // ✅ Store user in context
         } catch (error) {
           console.error("Authentication error:", error);
           Alert.alert(
             "Authentication Error",
-            "Failed to authenticate with server",
+            "Failed to authenticate with server"
           );
         }
       }
@@ -112,17 +97,6 @@ const SignInView: React.FC<SignInViewProps> = ({ onUserInfoReceived }) => {
 
     handleGoogleSignIn();
   }, [response]);
-
-  const handleSignOut = async () => {
-    try {
-      await AsyncStorage.removeItem("@user");
-      await AsyncStorage.removeItem("@authToken");
-      setUserInfo(null);
-      Alert.alert("Signed Out", "You have successfully signed out.");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   return (
     <View style={styles.container}>
