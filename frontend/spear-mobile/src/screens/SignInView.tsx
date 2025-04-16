@@ -27,7 +27,7 @@ const SignInView: React.FC = () => {
     iosClientId: process.env.IOS_CLIENT_ID,
   });
 
-  const { setUserInfo } = useUser(); // ✅ Use context
+  const { setUserInfo } = useUser(); 
 
   useEffect(() => {
     const checkExistingAuth = async () => {
@@ -37,7 +37,7 @@ const SignInView: React.FC = () => {
 
         if (storedToken && storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          setUserInfo(parsedUser); // ✅ Set user in context
+          setUserInfo(parsedUser); 
         }
       } catch (error) {
         console.error("Error checking auth state:", error);
@@ -84,7 +84,7 @@ const SignInView: React.FC = () => {
           await AsyncStorage.setItem("@authToken", authData.token);
           await AsyncStorage.setItem("@user", JSON.stringify(authData.user));
 
-          setUserInfo(authData.user); // ✅ Store user in context
+          setUserInfo(authData.user); 
         } catch (error) {
           console.error("Authentication error:", error);
           Alert.alert(

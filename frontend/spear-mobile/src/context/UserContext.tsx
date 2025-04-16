@@ -10,7 +10,7 @@ type UserInfo = {
   picture: string;
   oauthProvider: string;
   oauthProviderId: string;
-  likes: Poem[];
+  likedPoems: Poem[];
 } | null;
 
 type UserContextType = {

@@ -11,6 +11,7 @@ import {
 import { Colors } from "../constants/colors";
 import InteractionBar from "./InteractionBar";
 import axios from "axios";
+import { useUser } from "../context/UserContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -32,6 +33,14 @@ const PoemView: React.FC<PoemViewProps> = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [currLikes, setCurrLikes] = useState(likes);
   const [liked, setLiked] = useState(false);
+  const { userInfo } = useUser(); // Add this line
+
+  useEffect(() => {
+    if (userInfo && userInfo.likedPoems) {
+      const isLiked = userInfo.likedPoems.some((poem) => poem.id === id);
+      setLiked(isLiked);
+    }
+  }, [userInfo, id]);
 
   useEffect(() => {
     console.log(`Updated currentPage: ${currentPage} / ${totalPages}`);
