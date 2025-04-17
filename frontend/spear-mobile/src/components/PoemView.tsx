@@ -33,7 +33,7 @@ const PoemView: React.FC<PoemViewProps> = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [currLikes, setCurrLikes] = useState(likes);
   const [liked, setLiked] = useState(false);
-  const { userInfo } = useUser();
+  const { userInfo, setUserInfo } = useUser();
 
   useEffect(() => {
     if (userInfo && userInfo.likedPoems) {
@@ -86,16 +86,16 @@ const PoemView: React.FC<PoemViewProps> = ({
     if (liked) return;
 
     try {
-      const token = await AsyncStorage.getItem("@authToken"); // Get JWT token
-      const userEmail = await AsyncStorage.getItem("@user"); // Get user info
+      const token = await AsyncStorage.getItem("@authToken");
+      const userEmail = await AsyncStorage.getItem("@user");
 
       if (!token || !userEmail) {
         console.error("No auth token or user info found.");
         return;
       }
 
-      const parsedUser = JSON.parse(userEmail); // Parse the stored user
-      const email = parsedUser?.email || ""; // Ensure email is a string
+      const parsedUser = JSON.parse(userEmail);
+      const email = parsedUser?.email || "";
 
       if (!email) {
         console.error("User email is missing.");
@@ -113,6 +113,17 @@ const PoemView: React.FC<PoemViewProps> = ({
       if (response.status === 200) {
         setCurrLikes((prev) => prev + 1);
         setLiked(true);
+
+        // Update user's liked poems in the frontend state
+        if (userInfo) {
+          setUserInfo({
+            ...userInfo,
+            likedPoems: [
+              ...userInfo.likedPoems,
+              { id, title, content, author, likes: currLikes + 1 },
+            ],
+          });
+        }
       }
     } catch (error) {
       console.error("Error liking poem:", error);
