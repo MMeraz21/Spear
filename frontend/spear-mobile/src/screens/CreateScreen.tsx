@@ -6,55 +6,90 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-
 import { Colors } from "../constants/colors";
+import { useUser } from "../context/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CreateScreen: React.FC = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [authorId, setAuthorId] = useState("");
   const [tags, setTags] = useState("");
   const [language, setLanguage] = useState("English");
+  const [isLoading, setIsLoading] = useState(false);
+  const { userInfo } = useUser();
+
+  const validateInputs = () => {
+    if (!title.trim()) {
+      Alert.alert("Error", "Please enter a title for your poem");
+      return false;
+    }
+    if (!content.trim()) {
+      Alert.alert("Error", "Please enter content for your poem");
+      return false;
+    }
+    if (!userInfo?.id) {
+      Alert.alert("Error", "You must be logged in to create a poem");
+      return false;
+    }
+    return true;
+  };
 
   const handleUpload = async () => {
-    if (!title || !content || !authorId) {
-      Alert.alert("Error", "Please fill in all required fields");
-    }
+    if (!validateInputs()) return;
 
-    const poemData = {
-      title,
-      content,
-      authorId,
-      tags: tags.split(",").map((tag) => tag.trim()),
-      language,
-    };
-
-    console.log(poemData);
+    setIsLoading(true);
 
     try {
+      const token = await AsyncStorage.getItem("@authToken");
+      if (!token) {
+        Alert.alert(
+          "Error",
+          "Authentication token not found. Please log in again.",
+        );
+        return;
+      }
+
+      const poemData = {
+        title: title.trim(),
+        content: content.trim(),
+        authorId: userInfo!.id,
+        tags: tags
+          ? tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : [],
+        language,
+      };
+
       const response = await fetch("http://localhost:8080/api/poems", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(poemData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload poem");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to upload poem");
       }
 
       Alert.alert("Success", "Poem uploaded successfully");
+      // Clear form
       setTitle("");
       setContent("");
-      setAuthorId("");
       setTags("");
       setLanguage("English");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Something went wrong";
       Alert.alert("Upload Failed", errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,6 +103,7 @@ const CreateScreen: React.FC = () => {
         placeholderTextColor="#aaa"
         value={title}
         onChangeText={setTitle}
+        maxLength={100} // Reasonable title length limit
       />
 
       <TextInput
@@ -77,15 +113,9 @@ const CreateScreen: React.FC = () => {
         multiline
         value={content}
         onChangeText={setContent}
+        maxLength={5000} // Reasonable poem length limit
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Author"
-        placeholderTextColor="#aaa"
-        value={authorId}
-        onChangeText={setAuthorId}
-      />
       <TextInput
         style={styles.input}
         placeholder="Tags (comma-separated)"
@@ -94,8 +124,16 @@ const CreateScreen: React.FC = () => {
         onChangeText={setTags}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleUpload}>
-        <Text style={styles.buttonText}>Upload Poem</Text>
+      <TouchableOpacity
+        style={[styles.button, isLoading && styles.buttonDisabled]}
+        onPress={handleUpload}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color={Colors.primary3} />
+        ) : (
+          <Text style={styles.buttonText}>Upload Poem</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -137,6 +175,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderColor: Colors.primary3,
     borderWidth: 1,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: Colors.primary3,

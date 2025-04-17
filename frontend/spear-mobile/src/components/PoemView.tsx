@@ -33,7 +33,7 @@ const PoemView: React.FC<PoemViewProps> = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [currLikes, setCurrLikes] = useState(likes);
   const [liked, setLiked] = useState(false);
-  const { userInfo } = useUser(); // Add this line
+  const { userInfo } = useUser();
 
   useEffect(() => {
     if (userInfo && userInfo.likedPoems) {
