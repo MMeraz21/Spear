@@ -111,19 +111,21 @@ const PoemView: React.FC<PoemViewProps> = ({
       );
 
       if (response.status === 200) {
-        setCurrLikes((prev) => prev + 1);
+        setCurrLikes((prev) => {
+          const newLikes = prev + 1;
+          // Update user's liked poems with the new like count
+          if (userInfo) {
+            setUserInfo({
+              ...userInfo,
+              likedPoems: [
+                ...userInfo.likedPoems,
+                { id, title, content, author, likes: newLikes },
+              ],
+            });
+          }
+          return newLikes;
+        });
         setLiked(true);
-
-        // Update user's liked poems in the frontend state
-        if (userInfo) {
-          setUserInfo({
-            ...userInfo,
-            likedPoems: [
-              ...userInfo.likedPoems,
-              { id, title, content, author, likes: currLikes + 1 },
-            ],
-          });
-        }
       }
     } catch (error) {
       console.error("Error liking poem:", error);
@@ -199,7 +201,7 @@ const PoemView: React.FC<PoemViewProps> = ({
       </View>
       <InteractionBar
         poemId={id}
-        likes={likes}
+        likes={currLikes}
         liked={liked}
         onLike={handleLike}
       />
