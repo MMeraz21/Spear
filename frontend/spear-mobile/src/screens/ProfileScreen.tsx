@@ -4,6 +4,7 @@ import ProfileCard from "../components/ProfileCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "../constants/colors";
 import { useUser } from "../context/UserContext";
+import LikedPoems from "../components/LikedPoems";
 
 const ProfileScreen: React.FC = () => {
   const { userInfo, setUserInfo } = useUser();
@@ -82,7 +83,7 @@ const ProfileScreen: React.FC = () => {
           />
         )}
       </View>
-      <Text style={styles.text}>Welcome to the Profile Screen!</Text>
+      <LikedPoems poemList={userInfo?.likedPoems} />
     </View>
   );
 };
