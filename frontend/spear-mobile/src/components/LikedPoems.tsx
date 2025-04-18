@@ -11,14 +11,16 @@ type LikedPoemsProps = {
 const LikedPoems: React.FC<LikedPoemsProps> = ({ poemList = [] }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Liked Poems</Text>
-      <FlatList
-        data={poemList}
-        renderItem={({ item }) => <PoemCard poem={item} />}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+      <View style={styles.card}>
+        <Text style={styles.header}>Liked Poems</Text>
+        <FlatList
+          data={poemList}
+          renderItem={({ item }) => <PoemCard poem={item} />}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </View>
   );
 };
@@ -26,15 +28,26 @@ const LikedPoems: React.FC<LikedPoemsProps> = ({ poemList = [] }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.secondary2,
+  },
+  card: {
     backgroundColor: Colors.secondary,
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    width: "100%",
+    marginBottom: 20,
+    paddingRight: 0,
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     color: Colors.dark,
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 16,
   },
   listContent: {
     paddingBottom: 16,

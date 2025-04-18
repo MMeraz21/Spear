@@ -83,7 +83,9 @@ const ProfileScreen: React.FC = () => {
           />
         )}
       </View>
-      <LikedPoems poemList={userInfo?.likedPoems} />
+      <View style={styles.bottomSection}>
+        <LikedPoems poemList={userInfo?.likedPoems} />
+      </View>
     </View>
   );
 };
@@ -110,11 +112,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "left",
-    alignSelf: "flex-start", // Ensures text is left-aligned
+    alignSelf: "flex-start",
   },
   topSection: {
     width: "100%",
     alignItems: "flex-start",
+  },
+  bottomSection: {
+    width: "100%",
+    alignItems: "flex-start",
+    flex: 1,
   },
 });
 
