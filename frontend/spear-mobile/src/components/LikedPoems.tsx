@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.secondary,
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -41,13 +41,13 @@ const styles = StyleSheet.create({
     elevation: 3,
     width: "100%",
     marginBottom: 20,
-    paddingRight: 0,
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     color: Colors.dark,
     marginBottom: 16,
+    alignSelf: "center",
   },
   listContent: {
     paddingBottom: 16,
