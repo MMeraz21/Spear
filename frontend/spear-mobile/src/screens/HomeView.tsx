@@ -27,15 +27,7 @@ const HomeView: React.FC = () => {
     loadPoems();
   }, []);
 
-  const renderPoem = ({ item }: { item: Poem }) => (
-    <PoemView
-      title={item.title}
-      content={item.content}
-      author={item.author}
-      likes={item.likes}
-      id={item.id}
-    />
-  );
+  const renderPoem = ({ item }: { item: Poem }) => <PoemView poem={item} />;
 
   return (
     <View>

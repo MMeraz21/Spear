@@ -6,10 +6,11 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
+  MainTabs: undefined;
   PoemView: { poem: Poem };
 };
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "PoemView">;
 
 type PoemCardProps = {
   poem: Poem;

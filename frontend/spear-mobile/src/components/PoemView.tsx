@@ -12,24 +12,40 @@ import { Colors } from "../constants/colors";
 import InteractionBar from "./InteractionBar";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Poem } from "../api/poems";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const { height, width } = Dimensions.get("window");
 
-type PoemViewProps = {
-  title: string;
-  content: string;
-  author: string;
-  likes: number;
-  id: string;
+type RootStackParamList = {
+  MainTabs: undefined;
+  PoemView: { poem: Poem };
 };
 
-const PoemView: React.FC<PoemViewProps> = ({
-  title,
-  content,
-  author,
-  likes,
-  id,
-}) => {
+type PoemViewProps = Partial<
+  NativeStackScreenProps<RootStackParamList, "PoemView">
+> & {
+  poem?: Poem;
+};
+
+const PoemView: React.FC<PoemViewProps> = (props) => {
+  const poemData = props.route?.params?.poem || props.poem;
+
+  if (!poemData) {
+    console.error("PoemView rendered without poem data!");
+    return (
+      <View>
+        <Text>Error loading poem.</Text>
+      </View>
+    );
+  }
+
+  const { title, content, author, likes, id } = poemData;
+
+  const navigation = useNavigation();
+
   const [currentPage, setCurrentPage] = useState(0);
   const [currLikes, setCurrLikes] = useState(likes);
   const [liked, setLiked] = useState(false);
@@ -184,6 +200,14 @@ const PoemView: React.FC<PoemViewProps> = ({
 
   return (
     <View style={styles.poemContainer} {...panResponder.panHandlers}>
+      {navigation.canGoBack() && (
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color={Colors.dark} />
+        </TouchableOpacity>
+      )}
       <View style={styles.contentWrapper}>
         <Text style={styles.title}>{title}</Text>
 
@@ -216,6 +240,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Colors.secondary,
+    position: "relative",
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    zIndex: 10,
+    padding: 10,
   },
   contentWrapper: {
     width: "90%",
