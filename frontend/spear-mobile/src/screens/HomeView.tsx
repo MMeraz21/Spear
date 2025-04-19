@@ -27,19 +27,21 @@ const HomeView: React.FC = () => {
     loadPoems();
   }, []);
 
+  const renderPoem = ({ item }: { item: Poem }) => (
+    <PoemView
+      title={item.title}
+      content={item.content}
+      author={item.author}
+      likes={item.likes}
+      id={item.id}
+    />
+  );
+
   return (
     <View>
       <FlatList
         data={poems}
-        renderItem={({ item }) => (
-          <PoemView
-            title={item.title}
-            content={item.content}
-            author={item.author}
-            likes={item.likes}
-            id={item.id}
-          />
-        )}
+        renderItem={renderPoem}
         keyExtractor={(item) => item.id.toString()}
         pagingEnabled
         showsVerticalScrollIndicator={false}
