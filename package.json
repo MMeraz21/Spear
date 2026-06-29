@@ -1,0 +1,9 @@
+{
+  "name": "spear",
+  "private": true,
+  "scripts": {
+    "mobile": "npm --prefix apps/mobile start",
+    "api": "cd apps/api && ./mvnw spring-boot:run",
+    "seed": "python scripts/seed-poems.py"
+  }
+}

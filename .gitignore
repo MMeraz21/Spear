@@ -1,36 +1,35 @@
+# Environment
 .env
+.env*.local
 
-
-# dependencies
+# Dependencies
 node_modules/
 
-# Expo
+# Expo / mobile
 .expo/
 dist/
 web-build/
+.metro-health-check*
 
-# Native
+# Native signing
 *.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.pem
 
-# Metro
-.metro-health-check*
+# Java / API
+apps/api/target/
 
-# debug
+# Debug logs
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
 # macOS
 .DS_Store
-*.pem
 
-# local env files
-.env*.local
-
-# typescript
+# TypeScript
 *.tsbuildinfo

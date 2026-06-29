@@ -1,4 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "disabled",
-    "java.compile.nullAnalysis.mode": "automatic"
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.import.maven.enabled": true,
+  "java.project.sourcePaths": ["apps/api/src/main/java"]
 }

@@ -1,3 +1,8 @@
+"""Seed the Spear API with poems from PoetryDB.
+
+Expects the API to be running locally (start with `npm run api` from repo root).
+"""
+
 import requests
 
 # API endpoint to fetch poems
